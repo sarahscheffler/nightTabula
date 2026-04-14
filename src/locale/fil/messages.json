@@ -1,10 +1,10 @@
 {
   "appName": {
-    "message": "nightTab",
+    "message": "nightTabula",
     "description": "The name of the extension, displayed in the web store."
   },
   "appShortName": {
-    "message": "nightTab",
+    "message": "nightTabula",
     "description": "The name of the extension, displayed in the web store."
   },
   "appDescription": {
