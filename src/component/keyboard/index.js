@@ -106,6 +106,15 @@ keyboard.ctrAltR = new KeyboardShortcut({
   }
 });
 
+keyboard.ctrlShiftF = new KeyboardShortcut({
+  keycode: 70,
+  ctrl: true,
+  shift: true,
+  action: () => {
+    header.element.search.element.input.text.focus();
+  }
+});
+
 keyboard.init = () => {
   keyboard.esc.add();
   keyboard.ctrAltA.add();
@@ -114,6 +123,8 @@ keyboard.init = () => {
   keyboard.ctrAltG.add();
   keyboard.ctrAltM.add();
   keyboard.ctrAltR.add();
+  keyboard.ctrlShiftF.add();
+
 };
 
 export { keyboard };

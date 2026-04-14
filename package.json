@@ -6,6 +6,7 @@
   "scripts": {
     "start": "webpack serve --open --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
+    "build:test": "webpack --config webpack.prod.js --env test",
     "lint": "eslint"
   },
   "keywords": [

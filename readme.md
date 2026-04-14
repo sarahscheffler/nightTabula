@@ -4,7 +4,7 @@ zombiefox's [nightTab](https://zombiefox.github.io/nightTab) is excellent.  I wa
 
 Write more here if this ever becomes more than "just me."
 
-# Development (original nightTab)
+# Development (original nightTab with tweaks)
 
 When developing use:
 - `npm start`
@@ -13,10 +13,10 @@ A development server will automatically open the project in your browser. Normal
 
 
 To build the project use:
-- `npm run build`
+- `npm run build` — production build. Output: `/dist/web/` and `/dist/extension/nightTabula_<version>.zip` with addon ID `nightTabula@sarahscheffler`.
 
-A web ready folder will be created in `/dist/web/`.
-A browser addon/extension ready zip will be created in `/dist/extension/`.
+To build a test version of the project use:
+- `npm run build:test` — same build but with addon ID `nightTabula-test@sarahscheffler` and display name `nightTabula-test`. Output zip is named `nightTabula-test_<version>.zip`. This lets the test build be installed in Firefox alongside the signed release without replacing it. Source files are not modified; the name and ID are patched in-memory during the build.
 
 
 # Support (original nightTab)

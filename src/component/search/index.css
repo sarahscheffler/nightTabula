@@ -75,3 +75,7 @@ input[type="search"]:disabled {
   --form-placeholder-focus-hover: var(--theme-background-color-text);
   --form-placeholder-disabled: var(--theme-background-color-text);
 }
+
+.is-search .bookmark.is-search-selected .bookmark-front {
+  box-shadow: inset 0 0 0 3px rgb(var(--theme-accent));
+}

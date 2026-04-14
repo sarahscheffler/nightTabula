@@ -67,35 +67,7 @@ export const Search = function () {
 
   this.placeholder = () => {
 
-    let placeholder = '';
-
-    if (state.get.current().bookmark.show) {
-      placeholder = 'Find bookmarks or search';
-    } else {
-      placeholder = 'Search';
-    }
-
-    switch (state.get.current().header.search.engine.selected) {
-
-      case 'custom':
-
-        if (isValidString(state.get.current().header.search.engine.custom.name)) {
-
-          placeholder = placeholder + ' ' + state.get.current().header.search.engine.custom.name;
-
-        }
-
-        break;
-
-      default:
-
-        placeholder = placeholder + ' ' + searchEnginePreset[state.get.current().header.search.engine.selected].name;
-
-        break;
-
-    }
-
-    this.element.input.text.placeholder = placeholder;
+    this.element.input.text.placeholder = 'Type (Esc) Ctrl+Shift+F to search';
 
   };
 
@@ -143,6 +115,28 @@ export const Search = function () {
     this.element.input.addEventListener();
   };
 
+  let selectedIndex = -1;
+
+  this.getVisibleLinks = () => {
+    return Array.from(document.querySelectorAll('.bookmark-link'));
+  };
+
+  this.clearSelection = () => {
+    selectedIndex = -1;
+    this.getVisibleLinks().forEach((link) => {
+      link.closest('.bookmark').classList.remove('is-search-selected');
+    });
+  };
+
+  this.setSelection = (index) => {
+    const links = this.getVisibleLinks();
+    links.forEach((link) => { link.closest('.bookmark').classList.remove('is-search-selected'); });
+    selectedIndex = index;
+    if (selectedIndex >= 0 && selectedIndex < links.length) {
+      links[selectedIndex].closest('.bookmark').classList.add('is-search-selected');
+    }
+  };
+
   this.performSearch = () => {
 
     const html = document.querySelector('html');
@@ -181,6 +175,12 @@ export const Search = function () {
 
     groupAndBookmark.render();
 
+    if (state.get.current().search) {
+      this.setSelection(0);
+    } else {
+      this.clearSelection();
+    }
+
   };
 
   this.clearSearch = () => {
@@ -210,6 +210,22 @@ export const Search = function () {
     this.element.form.appendChild(this.element.clear.button);
 
     this.element.search.appendChild(this.element.form);
+
+    this.element.input.text.addEventListener('keydown', (event) => {
+      if (!state.get.current().search) { return; }
+      const links = this.getVisibleLinks();
+      if (links.length === 0) { return; }
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        this.setSelection(Math.min(selectedIndex + 1, links.length - 1));
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        this.setSelection(Math.max(selectedIndex - 1, -1));
+      } else if (event.key === 'Enter' && selectedIndex >= 0) {
+        event.preventDefault();
+        links[selectedIndex].click();
+      }
+    });
 
   };
 
