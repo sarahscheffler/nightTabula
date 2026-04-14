@@ -459,4 +459,76 @@ data.init = () => {
   data.restore(data.load());
 };
 
+data.autoImport = async () => {
+  try {
+    const url = browser.runtime.getURL('auto_import.json');
+    const response = await fetch(url);
+    if (!response.ok) { return; }
+    const text = await response.text();
+    if (!isJson(text)) { return; }
+
+    const parsed = JSON.parse(text);
+    const newFilename = parsed._autoImport ? parsed._autoImport.filename : null;
+    if (!newFilename) { return; }
+
+    // Check if we already imported this file
+    const storedFilename = window.localStorage.getItem(APP_NAME + 'AutoImportFile');
+    if (newFilename === storedFilename) {
+      // Show notification if we just reloaded after an import
+      const justImported = window.sessionStorage.getItem(APP_NAME + 'JustImported');
+      if (justImported) {
+        window.sessionStorage.removeItem(APP_NAME + 'JustImported');
+        data.autoImport.notify(justImported);
+      }
+      return;
+    }
+
+    // New file — restore bookmarks only
+    data.import.state.setup.include = false;
+    data.import.state.theme.include = false;
+    data.import.state.bookmark.include = true;
+    data.import.state.bookmark.type = 'restore';
+
+    let dataToRestore = parsed;
+    if (dataToRestore.version !== version.number) {
+      data.backup(dataToRestore);
+      dataToRestore = data.update(dataToRestore);
+    }
+    data.restore(dataToRestore);
+    data.save();
+    data.import.reset();
+
+    // Store filename and a flag so the notification shows after reload
+    window.localStorage.setItem(APP_NAME + 'AutoImportFile', newFilename);
+    window.sessionStorage.setItem(APP_NAME + 'JustImported', newFilename);
+    window.location.reload();
+
+  } catch (e) {
+    console.log('nightTabula auto-import: error', e);
+  }
+};
+
+data.autoImport.notify = (filename) => {
+  const banner = document.createElement('div');
+  banner.textContent = 'Bookmarks loaded from ' + filename;
+  banner.style.cssText = [
+    'position:fixed',
+    'bottom:1rem',
+    'left:50%',
+    'transform:translateX(-50%)',
+    'background:rgb(var(--theme-accent))',
+    'color:#fff',
+    'padding:0.5rem 1.25rem',
+    'border-radius:4px',
+    'font-size:0.85rem',
+    'z-index:9999',
+    'pointer-events:none',
+    'opacity:1',
+    'transition:opacity 0.4s ease'
+  ].join(';');
+  document.body.appendChild(banner);
+  setTimeout(() => { banner.style.opacity = '0'; }, 3000);
+  setTimeout(() => { banner.remove(); }, 3500);
+};
+
 export { data };

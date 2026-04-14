@@ -24,4 +24,6 @@ component.pageLock.init();
 
 component.keyboard.init();
 
+component.data.autoImport();
+
 // component.menu.open();

@@ -58,6 +58,10 @@ module.exports = {
       }, {
         from: './src/initialBackground.js',
         to: './initialBackground.js'
+      }, {
+        from: '../nighttab_backups/latest.json',
+        to: './auto_import.json',
+        noErrorOnMissing: true
       }]
     })
   ]
