@@ -121,6 +121,17 @@ export const Search = function () {
     return Array.from(document.querySelectorAll('.bookmark-link'));
   };
 
+  this.getVisibleGroups = () => {
+    return Array.from(document.querySelectorAll('.group')).filter(group =>
+      group.querySelectorAll('.bookmark-link').length > 0
+    );
+  };
+
+  this.getFirstLinkIndexInGroup = (group) => {
+    const links = this.getVisibleLinks();
+    return links.findIndex(link => link.closest('.group') === group);
+  };
+
   this.clearSelection = () => {
     selectedIndex = -1;
     this.getVisibleLinks().forEach((link) => {
@@ -215,12 +226,30 @@ export const Search = function () {
       if (!state.get.current().search) { return; }
       const links = this.getVisibleLinks();
       if (links.length === 0) { return; }
-      if (event.key === 'ArrowDown') {
+      if (event.key === 'ArrowRight') {
         event.preventDefault();
         this.setSelection(Math.min(selectedIndex + 1, links.length - 1));
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        this.setSelection(Math.max(selectedIndex - 1, 0));
+      } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        const groups = this.getVisibleGroups();
+        const currentGroup = selectedIndex >= 0 ? links[selectedIndex].closest('.group') : null;
+        const currentGroupIndex = currentGroup ? groups.indexOf(currentGroup) : -1;
+        if (currentGroupIndex < groups.length - 1) {
+          const nextIndex = this.getFirstLinkIndexInGroup(groups[currentGroupIndex + 1]);
+          if (nextIndex >= 0) { this.setSelection(nextIndex); }
+        }
       } else if (event.key === 'ArrowUp') {
         event.preventDefault();
-        this.setSelection(Math.max(selectedIndex - 1, -1));
+        const groups = this.getVisibleGroups();
+        const currentGroup = selectedIndex >= 0 ? links[selectedIndex].closest('.group') : null;
+        const currentGroupIndex = currentGroup ? groups.indexOf(currentGroup) : groups.length;
+        if (currentGroupIndex > 0) {
+          const prevIndex = this.getFirstLinkIndexInGroup(groups[currentGroupIndex - 1]);
+          if (prevIndex >= 0) { this.setSelection(prevIndex); }
+        }
       } else if (event.key === 'Enter' && selectedIndex >= 0) {
         event.preventDefault();
         links[selectedIndex].click();

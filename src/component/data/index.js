@@ -483,9 +483,11 @@ data.autoImport = async () => {
       return;
     }
 
-    // New file — restore bookmarks only
-    data.import.state.setup.include = false;
-    data.import.state.theme.include = false;
+    // First-ever import: restore everything so cosmetic defaults apply.
+    // Subsequent imports: bookmarks only, preserving any manual theme changes.
+    const isFirstImport = storedFilename === null;
+    data.import.state.setup.include = isFirstImport;
+    data.import.state.theme.include = isFirstImport;
     data.import.state.bookmark.include = true;
     data.import.state.bookmark.type = 'restore';
 
